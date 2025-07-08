@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yahtzee - Euconcegojogar</title>
+    <meta name="description" content="Jogo de Yahtzee acessível com tema de madeira. Desenvolvido por Euconcegojogar.">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <!-- Indicador de carregamento -->
+    <div id="loading" aria-live="polite">Carregando...</div>
+
+    <!-- Cabeçalho -->
+    <header>
+      <h1 aria-live="polite">Bem-vindo ao Yahtzee!</h1>
+      <div class="controls">
+        <button id="start-btn" aria-label="Iniciar jogo">🎮 Iniciar Jogo</button>
+        <button id="help-btn" aria-label="Abrir ajuda do jogo" style="display: none;">📓 Ajuda</button>
+        <button id="save-btn" aria-label="Salvar jogo" style="display: none;">💾 Salvar</button>
+        <button id="load-btn" aria-label="Carregar jogo salvo" style="display: none;">📂 Carregar</button>
+        <button id="reset-btn" aria-label="Reiniciar jogo" style="display: none;">🔄 Reiniciar</button>
+        <button id="time-btn" aria-label="Ver tempo de jogo" style="display: none;">⏱️ Tempo</button>
+      </div>
+    </header>
+
+    <!-- Área principal -->
+    <main>
+      <section class="game-area">
+        <div class="dice-container" aria-live="polite">
+          <div class="dice" id="dice-1" role="img" aria-label="Dado 1, não rolado" tabindex="0"></div>
+          <div class="dice" id="dice-2" role="img" aria-label="Dado 2, não rolado" tabindex="0"></div>
+          <div class="dice" id="dice-3" role="img" aria-label="Dado 3, não rolado" tabindex="0"></div>
+          <div class="dice" id="dice-4" role="img" aria-label="Dado 4, não rolado" tabindex="0"></div>
+          <div class="dice" id="dice-5" role="img" aria-label="Dado 5, não rolado" tabindex="0"></div>
+        </div>
+        <div class="roll-controls" style="display: none;">
+          <button id="roll-btn" aria-label="Rolar dados">🎲 Rolar (3/3)</button>
+          <span id="score-display" aria-live="polite">Pontuação: 0</span>
+        </div>
+      </section>
+
+      <section class="score-table" role="grid" aria-label="Tabela de pontuação">
+        <h2>Tabela de Pontuação</h2>
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Categoria</th>
+              <th scope="col">Pontos</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1s</td><td id="score-ones" tabindex="0">-</td></tr>
+            <tr><td>2s</td><td id="score-twos" tabindex="0">-</td></tr>
+            <tr><td>3s</td><td id="score-threes" tabindex="0">-</td></tr>
+            <tr><td>4s</td><td id="score-fours" tabindex="0">-</td></tr>
+            <tr><td>5s</td><td id="score-fives" tabindex="0">-</td></tr>
+            <tr><td>6s</td><td id="score-sixes" tabindex="0">-</td></tr>
+            <tr><td>Bônus</td><td id="score-bonus">-</td></tr>
+            <tr><td>Trinca</td><td id="score-three-kind" tabindex="0">-</td></tr>
+            <tr><td>Quadra</td><td id="score-four-kind" tabindex="0">-</td></tr>
+            <tr><td>Full House</td><td id="score-full-house" tabindex="0">-</td></tr>
+            <tr><td>Sequência Pequena</td><td id="score-small-straight" tabindex="0">-</td></tr>
+            <tr><td>Sequência Grande</td><td id="score-large-straight" tabindex="0">-</td></tr>
+            <tr><td>Yahtzee</td><td id="score-yahtzee" tabindex="0">-</td></tr>
+            <tr><td>Chance</td><td id="score-chance" tabindex="0">-</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <!-- Aba lateral de ajuda -->
+    <aside id="help-panel" class="help-panel" aria-hidden="true">
+      <button id="close-help" aria-label="Fechar ajuda">✖️</button>
+      <h2>Ajuda - Regras do Yahtzee</h2>
+      <p>Jogue com 5 dados, até 3 rolagens por turno. Escolha quais dados manter e selecione uma categoria para pontuar. Cada categoria só pode ser usada uma vez.</p>
+      <h3>Pontuações</h3>
+      <ul>
+        <li><strong>1s, 2s, 3s, 4s, 5s, 6s:</strong> Soma dos dados com o número correspondente.</li>
+        <li><strong>Bônus:</strong> 35 pontos se a soma das categorias superiores (1s a 6s) for ≥ 63.</li>
+        <li><strong>Trinca:</strong> Soma de todos os dados se ≥ 3 iguais.</li>
+        <li><strong>Quadra:</strong> Soma de todos os dados se ≥ 4 iguais.</li>
+        <li><strong>Full House:</strong> 25 pontos (3 de um número + 2 de outro).</li>
+        <li><strong>Sequência Pequena:</strong> 30 pontos (4 dados consecutivos).</li>
+        <li><strong>Sequência Grande:</strong> 40 pontos (5 dados consecutivos).</li>
+        <li><strong>Yahtzee:</strong> 50 pontos (5 dados iguais).</li>
+        <li><strong>Chance:</strong> Soma de todos os dados.</li>
+      </ul>
+    </aside>
+
+    <!-- Mensagem de fim de jogo -->
+    <div id="game-end" aria-live="assertive" style="display: none;"></div>
+
+    <!-- Rodapé -->
+    <footer>
+      <p>Desenvolvido pela equipe do canal <a href="https://youtube.com/euconcegojogar" target="_blank" rel="noopener" aria-label="Visitar canal Euconcegojogar no YouTube">Euconcegojogar</a></p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="sounds.js"></script>
+  </body>
+</html>
