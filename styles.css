@@ -1,4 +1,4 @@
-/* Processado em 70 ms */
+/* Processado em 80 ms */
 /* Reset básico para acessibilidade e consistência */
 * {
   margin: 0;
@@ -78,7 +78,7 @@ button {
   cursor: pointer;
   min-width: 48px;
   min-height: 48px; /* Acessibilidade WCAG */
-  transition: background 0.2s;
+  transition: background 0.2s, outline 0.2s;
 }
 
 button:hover:not(:disabled) {
@@ -92,6 +92,7 @@ button:disabled {
 
 button:focus {
   outline: 3px solid #ffd700; /* Foco visível */
+  outline-offset: 2px;
 }
 
 /* Botão de iniciar */
@@ -133,14 +134,15 @@ button:focus {
   border-radius: 0.5rem;
   position: relative;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.2s, outline 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .dice:focus {
-  outline: 3px solid #ffd700;
+  outline: 3px solid #ffd700; /* Foco visível para TalkBack */
+  outline-offset: 2px;
 }
 
 .dice.locked {
@@ -152,9 +154,11 @@ button:focus {
   content: attr(data-value);
   position: absolute;
   bottom: 5px;
-  font-size: 0.8rem;
+  font-size: 1rem; /* Maior para visibilidade */
   color: #000;
   font-weight: bold;
+  text-align: center;
+  width: 100%;
 }
 
 /* Dados sem valor (não rolados) */
@@ -313,10 +317,21 @@ th {
 
 td[tabindex="0"] {
   cursor: pointer;
+  position: relative;
 }
 
 td[tabindex="0"]:hover {
   background: #d4c0a1;
+}
+
+td[tabindex="0"]:focus {
+  outline: 3px solid #ffd700; /* Foco visível para TalkBack */
+  outline-offset: 2px;
+}
+
+td[aria-disabled="true"] {
+  background: #666; /* Indicador visual para células desativadas */
+  cursor: not-allowed;
 }
 
 /* Mensagem de fim de jogo */
@@ -330,6 +345,11 @@ td[tabindex="0"]:hover {
   padding: 1rem;
   border-radius: 0.5rem;
   text-align: center;
+  z-index: 1000;
+}
+
+#game-end button {
+  margin: 0.5rem;
 }
 
 /* Aba lateral de ajuda */
@@ -390,6 +410,10 @@ footer a:hover {
   text-decoration: underline;
 }
 
+footer a:focus {
+  outline: 3px solid #ffd700; /* Foco visível */
+}
+
 /* Responsividade */
 @media (max-width: 600px) {
   h1 {
@@ -401,13 +425,13 @@ footer a:hover {
     height: 50px;
   }
 
-  .dice::before, .dice::after {
+  .dice::before {
     width: 10px;
     height: 10px;
   }
 
   .dice::after {
-    font-size: 0.7rem;
+    font-size: 0.8rem; /* Ajustado para telas menores */
   }
 
   .controls {
@@ -422,5 +446,13 @@ footer a:hover {
 
   .help-panel {
     width: 100%;
+  }
+
+  .score-table {
+    font-size: 0.9rem;
+  }
+
+  th, td {
+    padding: 0.5rem;
   }
 }

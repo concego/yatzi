@@ -1,4 +1,4 @@
-/* Processado em 80 ms */
+/* Processado em 90 ms */
 // Elementos do DOM
 const diceElements = document.querySelectorAll('.dice');
 const rollBtn = document.getElementById('roll-btn');
@@ -13,6 +13,7 @@ const timeBtn = document.getElementById('time-btn');
 const startBtn = document.getElementById('start-btn');
 const loadingDiv = document.getElementById('loading');
 const gameEndDiv = document.getElementById('game-end');
+const diceContainer = document.querySelector('.dice-container');
 
 // Estado do jogo
 let dice = [null, null, null, null, null]; // Valores dos dados (null até rolar)
@@ -41,8 +42,12 @@ function startGame() {
   timeBtn.style.display = 'inline-block';
   rollBtn.disabled = false;
   updateUI();
-  window.initSounds(); // Inicializar sons
-  playSound('confirm');
+  try {
+    window.initSounds(); // Inicializar sons
+    playSound('confirm');
+  } catch (error) {
+    console.error('Erro ao inicializar sons:', error);
+  }
 }
 
 // Função para rolar dados
@@ -52,7 +57,7 @@ function rollDice() {
     if (!locked[i]) {
       dice[i] = Math.floor(Math.random() * 6) + 1;
       die.setAttribute('data-value', dice[i]);
-      die.setAttribute('aria-label', `Dado ${i + 1}, valor ${dice[i]}`);
+      die.setAttribute('aria-label', `Dado ${i + 1}, valor ${dice[i]}, clicável para ${locked[i] ? 'destravar' : 'travar'}`);
       die.classList.add('rolling');
       playSound('roll');
       setTimeout(() => die.classList.remove('rolling'), 500);
@@ -63,14 +68,18 @@ function rollDice() {
   rollBtn.setAttribute('aria-label', `Rolar dados, ${rollsLeft} rolagens restantes`);
   if (rollsLeft === 0) rollBtn.disabled = true;
   updateScoreOptions();
+  // Foco no primeiro dado para acessibilidade
+  if (diceElements[0]) diceElements[0].focus();
 }
 
 // Travar/destravar dado
 diceElements.forEach((die, i) => {
+  die.setAttribute('role', 'button'); // Mais adequado para interação
   die.addEventListener('click', () => {
     if (gameStarted && rollsLeft < 3 && rollsLeft > 0) {
       locked[i] = !locked[i];
       die.classList.toggle('locked');
+      die.setAttribute('aria-label', `Dado ${i + 1}, valor ${dice[i] || 'não rolado'}, ${locked[i] ? 'travado' : 'clicável para travar'}`);
       playSound('select');
     }
   });
@@ -91,6 +100,8 @@ function updateScoreOptions() {
     if (scores[category] === null) {
       const score = calculateScore(category, dice);
       cell.textContent = score;
+      cell.setAttribute('aria-label', `Selecionar ${categoryToLabel(category)}, pontuação ${score}`);
+      cell.setAttribute('role', 'button');
       cell.onclick = () => selectScore(category, score);
       cell.onkeydown = (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -100,11 +111,24 @@ function updateScoreOptions() {
       };
       cell.setAttribute('tabindex', '0');
     } else {
+      cell.setAttribute('aria-label', `${categoryToLabel(category)}, pontuação ${scores[category]}, já selecionado`);
+      cell.setAttribute('aria-disabled', 'true');
       cell.onclick = null;
       cell.onkeydown = null;
       cell.removeAttribute('tabindex');
     }
   });
+}
+
+// Converter categoria para rótulo acessível
+function categoryToLabel(category) {
+  const labels = {
+    ones: '1s', twos: '2s', threes: '3s', fours: '4s', fives: '5s', sixes: '6s',
+    threeKind: 'Trinca', fourKind: 'Quadra', fullHouse: 'Full House',
+    smallStraight: 'Sequência Pequena', largeStraight: 'Sequência Grande',
+    yahtzee: 'Yahtzee', chance: 'Chance'
+  };
+  return labels[category] || category;
 }
 
 // Calcular pontuação para cada categoria
@@ -140,10 +164,13 @@ function calculateScore(category, dice) {
 function selectScore(category, score) {
   if (!gameStarted || scores[category] !== null) return;
   scores[category] = score;
-  document.getElementById(`score-${category}`).textContent = score;
-  document.getElementById(`score-${category}`).onclick = null;
-  document.getElementById(`score-${category}`).onkeydown = null;
-  document.getElementById(`score-${category}`).removeAttribute('tabindex');
+  const cell = document.getElementById(`score-${category}`);
+  cell.textContent = score;
+  cell.setAttribute('aria-label', `${categoryToLabel(category)}, pontuação ${score}, já selecionado`);
+  cell.setAttribute('aria-disabled', 'true');
+  cell.onclick = null;
+  cell.onkeydown = null;
+  cell.removeAttribute('tabindex');
   totalScore += score;
   scoreDisplay.textContent = `Pontuação: ${totalScore}`;
   scoreDisplay.setAttribute('aria-live', 'polite');
@@ -156,6 +183,8 @@ function selectScore(category, score) {
   playSound('confirm');
   updateBonus();
   checkGameEnd();
+  // Foco na tabela após seleção
+  document.querySelector('.score-table').focus();
 }
 
 // Atualizar bônus
@@ -168,6 +197,7 @@ function updateBonus() {
     totalScore += 35;
     document.getElementById('score-bonus').textContent = 35;
     scoreDisplay.textContent = `Pontuação: ${totalScore}`;
+    scoreDisplay.setAttribute('aria-live', 'polite');
   }
 }
 
@@ -179,6 +209,7 @@ function checkGameEnd() {
     rollBtn.disabled = true;
     gameEndDiv.textContent = `Jogo finalizado! Pontuação final: ${totalScore}`;
     gameEndDiv.style.display = 'block';
+    gameEndDiv.setAttribute('aria-live', 'assertive');
     playSound('confirm');
   }
 }
@@ -190,7 +221,11 @@ saveBtn.addEventListener('click', () => {
   localStorage.setItem('yahtzeeGame', JSON.stringify(gameState));
   gameEndDiv.textContent = 'Jogo salvo!';
   gameEndDiv.style.display = 'block';
-  setTimeout(() => gameEndDiv.style.display = 'none', 2000);
+  gameEndDiv.setAttribute('aria-live', 'assertive');
+  setTimeout(() => {
+    gameEndDiv.style.display = 'none';
+    gameEndDiv.textContent = '';
+  }, 2000);
   playSound('confirm');
 });
 
@@ -210,12 +245,20 @@ loadBtn.addEventListener('click', () => {
     updateUI();
     gameEndDiv.textContent = 'Jogo carregado!';
     gameEndDiv.style.display = 'block';
-    setTimeout(() => gameEndDiv.style.display = 'none', 2000);
+    gameEndDiv.setAttribute('aria-live', 'assertive');
+    setTimeout(() => {
+      gameEndDiv.style.display = 'none';
+      gameEndDiv.textContent = '';
+    }, 2000);
     playSound('confirm');
   } else {
     gameEndDiv.textContent = 'Nenhum jogo salvo encontrado.';
     gameEndDiv.style.display = 'block';
-    setTimeout(() => gameEndDiv.style.display = 'none', 2000);
+    gameEndDiv.setAttribute('aria-live', 'assertive');
+    setTimeout(() => {
+      gameEndDiv.style.display = 'none';
+      gameEndDiv.textContent = '';
+    }, 2000);
   }
 });
 
@@ -228,7 +271,7 @@ function updateUI() {
       die.classList.remove('locked');
     } else {
       die.setAttribute('data-value', dice[i]);
-      die.setAttribute('aria-label', `Dado ${i + 1}, valor ${dice[i]}`);
+      die.setAttribute('aria-label', `Dado ${i + 1}, valor ${dice[i]}, ${locked[i] ? 'travado' : 'clicável para travar'}`);
       if (locked[i]) die.classList.add('locked');
       else die.classList.remove('locked');
     }
@@ -241,11 +284,14 @@ function updateUI() {
     const cell = document.getElementById(`score-${category}`);
     if (scores[category] !== null) {
       cell.textContent = scores[category];
+      cell.setAttribute('aria-label', `${categoryToLabel(category)}, pontuação ${scores[category]}, já selecionado`);
+      cell.setAttribute('aria-disabled', 'true');
       cell.onclick = null;
       cell.onkeydown = null;
       cell.removeAttribute('tabindex');
     } else {
       cell.textContent = '-';
+      cell.setAttribute('aria-label', `${categoryToLabel(category)}, não selecionado`);
     }
   });
 }
@@ -255,6 +301,7 @@ resetBtn.addEventListener('click', () => {
   if (!gameStarted) return;
   gameEndDiv.textContent = 'Deseja reiniciar o jogo? Todo o progresso será perdido.';
   gameEndDiv.style.display = 'block';
+  gameEndDiv.setAttribute('aria-live', 'assertive');
   const confirmBtn = document.createElement('button');
   confirmBtn.textContent = 'Confirmar';
   confirmBtn.setAttribute('aria-label', 'Confirmar reinício do jogo');
@@ -295,7 +342,11 @@ timeBtn.addEventListener('click', () => {
   const seconds = elapsed % 60;
   gameEndDiv.textContent = `Tempo de jogo: ${minutes} minutos e ${seconds} segundos`;
   gameEndDiv.style.display = 'block';
-  setTimeout(() => gameEndDiv.style.display = 'none', 2000);
+  gameEndDiv.setAttribute('aria-live', 'assertive');
+  setTimeout(() => {
+    gameEndDiv.style.display = 'none';
+    gameEndDiv.textContent = '';
+  }, 2000);
   playSound('confirm');
 });
 

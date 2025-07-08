@@ -13,7 +13,7 @@
 
     <!-- Cabeçalho -->
     <header>
-      <h1 aria-live="polite">Bem-vindo ao Yahtzee!</h1>
+      <h1 id="game-title" aria-live="polite">Bem-vindo ao Yahtzee!</h1>
       <div class="controls">
         <button id="start-btn" aria-label="Iniciar jogo">🎮 Iniciar Jogo</button>
         <button id="help-btn" aria-label="Abrir ajuda do jogo" style="display: none;">📓 Ajuda</button>
@@ -28,20 +28,20 @@
     <main>
       <section class="game-area">
         <div class="dice-container" aria-live="polite">
-          <div class="dice" id="dice-1" role="img" aria-label="Dado 1, não rolado" tabindex="0"></div>
-          <div class="dice" id="dice-2" role="img" aria-label="Dado 2, não rolado" tabindex="0"></div>
-          <div class="dice" id="dice-3" role="img" aria-label="Dado 3, não rolado" tabindex="0"></div>
-          <div class="dice" id="dice-4" role="img" aria-label="Dado 4, não rolado" tabindex="0"></div>
-          <div class="dice" id="dice-5" role="img" aria-label="Dado 5, não rolado" tabindex="0"></div>
+          <div class="dice" id="dice-1" role="button" aria-label="Dado 1, não rolado" tabindex="0"></div>
+          <div class="dice" id="dice-2" role="button" aria-label="Dado 2, não rolado" tabindex="0"></div>
+          <div class="dice" id="dice-3" role="button" aria-label="Dado 3, não rolado" tabindex="0"></div>
+          <div class="dice" id="dice-4" role="button" aria-label="Dado 4, não rolado" tabindex="0"></div>
+          <div class="dice" id="dice-5" role="button" aria-label="Dado 5, não rolado" tabindex="0"></div>
         </div>
         <div class="roll-controls" style="display: none;">
-          <button id="roll-btn" aria-label="Rolar dados">🎲 Rolar (3/3)</button>
+          <button id="roll-btn" aria-label="Rolar dados, 3 rolagens restantes">🎲 Rolar (3/3)</button>
           <span id="score-display" aria-live="polite">Pontuação: 0</span>
         </div>
       </section>
 
-      <section class="score-table" role="grid" aria-label="Tabela de pontuação">
-        <h2>Tabela de Pontuação</h2>
+      <section class="score-table" role="grid" aria-describedby="score-table-desc">
+        <h2 id="score-table-desc">Tabela de Pontuação</h2>
         <table>
           <thead>
             <tr>
@@ -50,20 +50,20 @@
             </tr>
           </thead>
           <tbody>
-            <tr><td>1s</td><td id="score-ones" tabindex="0">-</td></tr>
-            <tr><td>2s</td><td id="score-twos" tabindex="0">-</td></tr>
-            <tr><td>3s</td><td id="score-threes" tabindex="0">-</td></tr>
-            <tr><td>4s</td><td id="score-fours" tabindex="0">-</td></tr>
-            <tr><td>5s</td><td id="score-fives" tabindex="0">-</td></tr>
-            <tr><td>6s</td><td id="score-sixes" tabindex="0">-</td></tr>
-            <tr><td>Bônus</td><td id="score-bonus">-</td></tr>
-            <tr><td>Trinca</td><td id="score-three-kind" tabindex="0">-</td></tr>
-            <tr><td>Quadra</td><td id="score-four-kind" tabindex="0">-</td></tr>
-            <tr><td>Full House</td><td id="score-full-house" tabindex="0">-</td></tr>
-            <tr><td>Sequência Pequena</td><td id="score-small-straight" tabindex="0">-</td></tr>
-            <tr><td>Sequência Grande</td><td id="score-large-straight" tabindex="0">-</td></tr>
-            <tr><td>Yahtzee</td><td id="score-yahtzee" tabindex="0">-</td></tr>
-            <tr><td>Chance</td><td id="score-chance" tabindex="0">-</td></tr>
+            <tr><td>1s</td><td id="score-ones" role="button" aria-label="1s, não selecionado" tabindex="0">-</td></tr>
+            <tr><td>2s</td><td id="score-twos" role="button" aria-label="2s, não selecionado" tabindex="0">-</td></tr>
+            <tr><td>3s</td><td id="score-threes" role="button" aria-label="3s, não selecionado" tabindex="0">-</td></tr>
+            <tr><td>4s</td><td id="score-fours" role="button" aria-label="4s, não selecionado" tabindex="0">-</td></tr>
+            <tr><td>5s</td><td id="score-fives" role="button" aria-label="5s, não selecionado" tabindex="0">-</td></tr>
+            <tr><td>6s</td><td id="score-sixes" role="button" aria-label="6s, não selecionado" tabindex="0">-</td></tr>
+            <tr><td>Bônus</td><td id="score-bonus" aria-label="Bônus, não aplicável">-</td></tr>
+            <tr><td>Trinca</td><td id="score-three-kind" role="button" aria-label="Trinca, não selecionado" tabindex="0">-</td></tr>
+            <tr><td>Quadra</td><td id="score-four-kind" role="button" aria-label="Quadra, não selecionado" tabindex="0">-</td></tr>
+            <tr><td>Full House</td><td id="score-full-house" role="button" aria-label="Full House, não selecionado" tabindex="0">-</td></tr>
+            <tr><td>Sequência Pequena</td><td id="score-small-straight" role="button" aria-label="Sequência Pequena, não selecionado" tabindex="0">-</td></tr>
+            <tr><td>Sequência Grande</td><td id="score-large-straight" role="button" aria-label="Sequência Grande, não selecionado" tabindex="0">-</td></tr>
+            <tr><td>Yahtzee</td><td id="score-yahtzee" role="button" aria-label="Yahtzee, não selecionado" tabindex="0">-</td></tr>
+            <tr><td>Chance</td><td id="score-chance" role="button" aria-label="Chance, não selecionado" tabindex="0">-</td></tr>
           </tbody>
         </table>
       </section>
